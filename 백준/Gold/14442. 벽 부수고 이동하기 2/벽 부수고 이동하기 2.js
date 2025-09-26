@@ -1,59 +1,62 @@
+class Queue{
+    constructor(){
+        this.head = null;
+        this.tail = null;
+        this.size = 0;
+    }
+    
+    enqueue(item){
+        const node = {next: null, value: item}
+        if(this.size === 0)this.head = node;
+        else this.tail.next = node;
+        this.tail = node;
+        this.size++;
+    }
+    
+    dequeue(){
+        if(this.size === 0)return null;
+        const value = this.head.value;
+        if(this.size === 1){
+            this.head = null;
+        }else{
+            this.head = this.head.next;
+        }
+        this.size--;
+        return value;
+    }
+    
+    isEmpty(){
+        return this.size === 0;
+    }
+}
+
 let fs = require('fs');
-let input = fs.readFileSync('/dev/stdin').toString().split('\n');
+let input = fs.readFileSync('/dev/stdin').toString().trim().split('\n');
 
 let [N, M, K] = input[0].split(' ').map(Number);
-let map = input.slice(1, N + 1);
-let visited = Array.from({length: N}, () => Array.from({length: M}, () => Array(K + 1).fill(Number.MAX_SAFE_INTEGER)));
-const queue = createQueue();
-const moves = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-queue.push([0, 0, 0]);
-visited[0][0][0] = 1;
-
-while(!queue.isEmpty()){
-    const [r, c, des] = queue.shift();
-    if(r === N - 1 && c === M - 1){
-        console.log(Math.min(...visited[r][c]));
-        return;
-    }
-    for(const [moveR, moveC] of moves){
-        const [newR, newC] = [r + moveR, c + moveC];
+let map = input.slice(1).map(line => line.split('').map(Number));
+const dr = [-1, 1, 0, 0];
+const dc = [0, 0, -1, 1];
+const dist = Array.from({length: N}, () => Array.from({length: M}, () => Array(K + 1).fill(Infinity)));
+const q = new Queue();
+q.enqueue([0, 0, 0]);
+dist[0][0][0] = 1;
+while(!q.isEmpty()){
+    const [r, c, d] = q.dequeue();
+    for(let i = 0; i < 4; i++){
+        const [newR, newC] = [r + dr[i], c + dc[i]];
         if(newR < 0 || newR >= N || newC < 0 || newC >= M)continue;
-        if(des < K && map[newR][newC] === '1' && visited[newR][newC][des + 1] > visited[r][c][des] + 1){
-            visited[newR][newC][des + 1] = visited[r][c][des] + 1;
-            queue.push([newR, newC, des + 1]);
+        const currDist = dist[r][c][d] + 1;
+        if(map[newR][newC] === 1 && d < K && dist[newR][newC][d + 1] > currDist){
+            dist[newR][newC][d + 1] = currDist;
+            q.enqueue([newR, newC, d + 1]);
         }
-        if(map[newR][newC] === '0' && visited[newR][newC][des] > visited[r][c][des] + 1){
-            visited[newR][newC][des] = visited[r][c][des] + 1;
-            queue.push([newR, newC, des]);
-        }
-    }
-}
-
-console.log(-1);
-
-function createQueue(){
-    let head = null;
-    let tail = null;
-    return{
-        push(item){
-            const node = {next: null, value: item};
-            if(!head){
-                head = node;
-                tail = node;
-            }else{
-                tail.next = node;
-                tail = node;
-            }
-        },
-        shift(){
-            if(!head)return null;
-            const value = head.value;
-            head = head.next;
-            if(!head)tail = null;
-            return value;
-        },
-        isEmpty(){
-            return head === null;
+        if(map[newR][newC] === 0 && dist[newR][newC][d] > currDist){
+            dist[newR][newC][d] = currDist;
+            q.enqueue([newR, newC, d]);
         }
     }
 }
+           
+const min = Math.min(...dist[N - 1][M - 1]);
+console.log(min === Infinity ? -1 : min);
