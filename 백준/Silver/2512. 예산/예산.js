@@ -4,17 +4,15 @@ let input = fs.readFileSync('/dev/stdin').toString().split('\n');
 let N = Number(input[0]);
 let budgets = input[1].split(' ').map(Number);
 let total = Number(input[2]);
-let budgetNeeded = budgets.reduce((acc, curr) => acc += curr, 0);
-if (budgetNeeded <= total) {
-    console.log(Math.max(...budgets));
-} else {
-    console.log(binarySearch());
-}
+const MAX = Math.max(...budgets);
+let answer = 0;
+binarySearch()
+console.log(answer);
 
 function binarySearch() {
     let start = 0;
-    let end = total;
-    while (start < end) {
+    let end = MAX;
+    while (start <= end) {
         let mid = Math.floor((start + end) / 2);
         let sum = 0;
         for (const budget of budgets) {
@@ -23,13 +21,13 @@ function binarySearch() {
             } else {
                 sum += budget;
             }
+            if(sum > total)break;
         }
         if (sum > total) {
-            end = mid;
+            end = mid - 1;
         } else {
+            answer = mid;
             start = mid + 1;
         }
     }
-
-    return start - 1;
 }
