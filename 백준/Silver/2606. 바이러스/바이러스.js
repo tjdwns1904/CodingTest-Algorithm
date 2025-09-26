@@ -1,33 +1,27 @@
 let fs = require('fs');
-let input = fs.readFileSync('/dev/stdin').toString().split('\n');
+let input = fs.readFileSync('/dev/stdin').toString().trim().split('\n');
 
-let [N, M] = [input[0], input[1]].map(Number);
-let edges = input.slice(2, M + 2).map(line => line.split(' ').map(Number));
+let [V, E] = [+input[0], +input[1]];
+let edges = input.slice(2).map(line => line.split(' ').map(Number));
 const graph = new Map();
-
-for(const [from, to] of edges){
-    if(!graph.has(from - 1))graph.set(from - 1, []);
-    if(!graph.has(to - 1))graph.set(to - 1, []);
-    graph.get(from - 1).push(to - 1);
-    graph.get(to - 1).push(from - 1);
+const visited = new Set();
+const q = [1];
+visited.add(1);
+for(const [a, b] of edges){
+    if(!graph.has(a))graph.set(a, []);
+    if(!graph.has(b))graph.set(b, []);
+    graph.get(a).push(b);
+    graph.get(b).push(a);
 }
 
-const queue = [];
-let visited = Array(N).fill(false);
-queue.push(0);
-visited[0] = true;
-while(queue.length){
-    const curr = queue.shift();
+while(q.length){
+    const curr = q.shift();
     if(!graph.has(curr))continue;
-    for(const node of graph.get(curr)){
-        if(visited[node])continue;
-        visited[node] = true;
-        queue.push(node);
+    for(const next of graph.get(curr)){
+        if(visited.has(next))continue;
+        visited.add(next);
+        q.push(next);
     }
 }
-let answer = -1;
-for(let v of visited){
-    if(v)answer++;
-}
 
-console.log(answer);
+console.log(visited.size - 1);
