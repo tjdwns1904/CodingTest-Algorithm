@@ -7,7 +7,7 @@ const kgs = [3, 5];
 DP[0] = 0; 
 for(let i = 3; i <= N; i++){
     for(const kg of kgs){
-        if(i - kg < 0 || DP[i - kg] === Infinity)continue;
+        if(i - kg < 0)continue;
         DP[i] = Math.min(DP[i - kg] + 1, DP[i]);
     }
 }
