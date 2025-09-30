@@ -6,16 +6,14 @@ let tasks = input.slice(1).map(line => line.split(' ').map(Number)).sort((a, b) 
 const pq = [];
 
 for(const [d, w] of tasks){
-    while(pq.length >= d && pq[0][1] < w){
-        heapPop(pq);
-    }
-    if(pq.length < d || pq[0][1] < w)heapPush(pq, [d, w]);
+    heapPush(pq, w);
+    if(pq.length > d)heapPop(pq);
 }
 
 let answer = 0;
 
 while(pq.length){
-    answer += heapPop(pq)[1];    
+    answer += heapPop(pq);    
 }
 
 console.log(answer);
@@ -25,7 +23,7 @@ function heapPush(heap, item){
     let idx = heap.length - 1;
     while(idx > 0){
         let parent = Math.floor((idx - 1) / 2);
-        if(heap[parent][1] <= heap[idx][1])break;
+        if(heap[parent] <= heap[idx])break;
         [heap[parent], heap[idx]] = [heap[idx], heap[parent]];
         idx = parent;
     }
@@ -41,8 +39,8 @@ function heapPop(heap){
     while(true){
         let left = 2 * idx + 1;
         let right = 2 * idx + 2;
-        if(left < heap.length && heap[left][1] < heap[smallest][1])smallest = left;
-        if(right < heap.length && heap[right][1] < heap[smallest][1])smallest = right;
+        if(left < heap.length && heap[left] < heap[smallest])smallest = left;
+        if(right < heap.length && heap[right] < heap[smallest])smallest = right;
         if(smallest === idx)break;
         [heap[idx], heap[smallest]] = [heap[smallest], heap[idx]];
         idx = smallest;
