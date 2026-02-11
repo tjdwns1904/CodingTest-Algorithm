@@ -23,13 +23,11 @@ while (left > 0) {
       if(cranes[i] >= boxes[j]){
         visited[j] = 1;
         left--;
-        moved++;
         break;
       }
     }
   }
   times++;
-  if(moved === 0)break;
 }
 
 console.log(times);
