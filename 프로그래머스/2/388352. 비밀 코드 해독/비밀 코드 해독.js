@@ -18,7 +18,7 @@ function solution(n, q, ans) {
             return;
         }
         
-        for(let i = num; i <= n; i++){
+        for(let i = num; i <= n - (4 - comb.size); i++){
             comb.add(i);
             getComb(i + 1, comb);
             comb.delete(i);
@@ -31,9 +31,3 @@ function solution(n, q, ans) {
     
     return answer;
 }
-
-// idx별로 진행
-// ans 수 기반으로 q에서 조합 구성
-// 1 ~ n 까지 배열로 선택 여부 확인
-// q에서 조합된 수 외 나머지 선택 금지 처리 필요
-// 마지막에 도달했을 때, 선택된 수 5개면 answer + 1
